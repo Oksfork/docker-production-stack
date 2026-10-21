@@ -1,0 +1,8 @@
+services:
+  docker-production-fe:
+    container_name: docker-production-fe
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - 3011:3000
