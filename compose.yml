@@ -1,13 +1,29 @@
 services:
+
+  db:
+    image: postgres:16-alpine3.23
+    container_name: docker-production-db
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    restart: always
+
   backend:
     container_name: docker-production-be
     build:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - 8001:8001
+      - ${API_PORT}:8001
     env_file:
       - .env
+    depends_on:
+      - db
 
   frontend:
     container_name: docker-production-fe
@@ -15,6 +31,11 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - 3011:3000
+      - ${FRONTEND_PORT}:3000
+    env_file:
+      - .env
     depends_on:
       - backend
+
+volumes:
+  postgres-data:
